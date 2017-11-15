@@ -1,5 +1,5 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/hw1p1/Debug/hw1p1.tlog
+﻿/*/Debug
+*.VC.db
+*.VC.VC.opendb
+workingDir
+/*/.vs
