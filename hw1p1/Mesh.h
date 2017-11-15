@@ -9,7 +9,7 @@ public:
 	float Ka[4]; // ambient coefficient
 	float Kd[4]; // diffuse coefficient
 	float Ks[4]; // specular coefficient
-	float Ns; // Phone specular component (smoothness)
+	float Ns; // Phone specular component (shininess)
 
 	float d; // transparency (d = 1 means opaque)
 	std::string map_Ka; // ambient texture, unused

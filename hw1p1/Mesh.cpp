@@ -72,12 +72,12 @@ void Mesh::LoadMesh(std::string filename) {
 		return;
 	}
 	printf("loading mesh %s\n", filename.c_str());
+	int currentMaterial = 0;
 	while (!feof(f)) {
 		char cmd[50];
 		cmd[0] = '\0';
 		if (fscanf(f, "%40s", cmd) != 1) break;
 		float x, y, z;
-		int currentMaterial = 0;
 
 		if (strcmp(cmd, "g") == 0) {
 			// read name
@@ -90,7 +90,6 @@ void Mesh::LoadMesh(std::string filename) {
 			}
 		}
 		else if (strcmp(cmd, "v") == 0) {
-			
 			if (fscanf(f, "%f %f %f", &x, &y, &z) == 3) {
 				vList.push_back(Vec3(x, y, z));
 			}
@@ -163,7 +162,7 @@ void Mesh::LoadMaterial(std::string filename) {
 		return;
 	}
 	printf("loading material %s\n", filename.c_str());
-	size_t currentMat;
+	size_t currentMat = 0;
 	float r, g, b;
 	while (!feof(f)) {
 		char cmd[50];
@@ -179,7 +178,8 @@ void Mesh::LoadMaterial(std::string filename) {
 				Material mat;
 				mList.push_back(mat);
 				currentMat = mTotal++;
-				matMap[name] = currentMat;
+				std::string nm(name);
+				matMap[nm] = currentMat;
 			}
 		}
 		else if (strcmp(cmd, "Ka") == 0) {

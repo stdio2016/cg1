@@ -33,13 +33,60 @@ void keyboardInput(unsigned char key, int x, int y) {
 		distance *= 1.1f; if (distance > 1000.0) distance = 1000;
 		break;
 	case 'a': case 'A':
-		theta -= 0.1f;
+		theta += 0.1f;
 		break;
 	case 'd': case 'D':
-		theta += 0.1f;
+		theta -= 0.1f;
 		break;
 	}
 	printf("key %d %d %d\n", key, x, y);
+	glutPostRedisplay();
+}
+
+void light()
+{
+	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat light_position[] = { 150, 150, 150, 1.0 };
+
+	glShadeModel(GL_SMOOTH);
+
+	// enable lighting
+	glEnable(GL_LIGHTING);
+	// set light property
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
+}
+
+void setMaterial(const Material &mat) {
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat.Ka);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat.Kd);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat.Ks);
+	glMaterialfv(GL_FRONT, GL_SHININESS, &mat.Ns);
+}
+
+void drawObject(Mesh *obj) {
+	int lastMaterial = -1;
+	glBegin(GL_TRIANGLES);
+	for (size_t i = 0; i < obj->fTotal; i++) {
+		if (lastMaterial != obj->faceList[i].m) {
+			glEnd();
+			lastMaterial = obj->faceList[i].m;
+			setMaterial(obj->mList[lastMaterial]);
+			glBegin(GL_TRIANGLES);
+		}
+		//glBegin(GL_TRIANGLES);
+		for (int j = 0; j < 3; j++) {
+			glNormal3fv(obj->nList[obj->faceList[i].v[j].n].p);
+			glVertex3fv(obj->vList[obj->faceList[i].v[j].v].p);
+		}
+		//glEnd();
+	}
+	glEnd();
 }
 
 void display() {
@@ -64,31 +111,11 @@ void display() {
 		0.0, 0.0, 0.0,     // center
 		0.0, 1.0, 0.0);    // up
 
-	glBegin(GL_TRIANGLES);
-	// right
-	GLfloat u[3][3] = {100, 0, 0, 50, -50, 0, 50, 50, 0};
-	glVertex3fv(u[0]);
-	glVertex3fv(u[1]);
-	glVertex3fv(u[2]);
-	// left
-	GLfloat v[3][3] = {-100, 0, 0, -50, -50, 0, -50, 50, 0 };
-	glVertex3fv(v[0]);
-	glVertex3fv(v[1]);
-	glVertex3fv(v[2]);
-	// up
-	GLfloat a[3][3] = { 0, 100, 0, 50, 50, 0, -50, 50, 0 };
-	glVertex3fv(a[0]);
-	glVertex3fv(a[1]);
-	glVertex3fv(a[2]);
-	// down
-	GLfloat b[3][3] = { 0, -100, 0, 50, -50, 0, -50, -50, 0 };
-	glVertex3fv(b[0]);
-	glVertex3fv(b[1]);
-	glVertex3fv(b[2]);
+	light();
 
-	glEnd();
+	drawObject(obj);
+
 	glutSwapBuffers();
-	glutPostRedisplay();
 }
 
 void reshape(int width, int height) {
