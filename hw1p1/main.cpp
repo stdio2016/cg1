@@ -4,6 +4,10 @@
 #include "SceneManager.h"
 
 void keyboardInput(unsigned char key, int x, int y);
+int lastX, lastY;
+int selection = 0;
+void mouseClick(int button, int state, int x, int y);
+void mouseDrag(int x, int y);
 void display(void);
 void reshape(int width, int height);
 int screenWidth, screenHeight;
@@ -18,6 +22,7 @@ int main(int argc, char *argv[]) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutCreateWindow("Assignment 1-1");
 	glutKeyboardFunc(keyboardInput);
+	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutMainLoop();
@@ -45,7 +50,36 @@ void keyboardInput(unsigned char key, int x, int y) {
 		sc->camera.eye = Vec3(eye[0] * a - eye[2] * b, eye[1], eye[0] * b + eye[2] * a) + sc->camera.vat;
 		break;
 	}
+	if (key >= '1' && key <= '9') {
+		int idx = key - '1';
+		if (idx < sc->displayObjs.size()) {
+			selection = idx;
+		}
+	}
 	printf("key %d %d %d\n", key, x, y);
+	glutPostRedisplay();
+}
+
+void mouseClick(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN) {
+			lastX = x;
+			lastY = y;
+			glutMotionFunc(mouseDrag);
+		}
+		if (state == GLUT_UP) {
+			glutMotionFunc(NULL);
+		}
+	}
+}
+
+void mouseDrag(int x, int y) {
+	const float ratio = (sc->camera.vat - sc->camera.eye).magnitude() / sc->camera.viewWidth;
+	printf("mouse drag to %d,%d\n", x, y);
+	sc->displayObjs[selection].transform[0] += (x - lastX) * ratio;
+	sc->displayObjs[selection].transform[1] += (lastY - y) * ratio;
+	lastX = x;
+	lastY = y;
 	glutPostRedisplay();
 }
 
