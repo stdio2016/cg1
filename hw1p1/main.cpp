@@ -2,6 +2,7 @@
 #include <cmath>
 #include "include/glut.h"
 #include "Mesh.h"
+#include "SceneManager.h"
 
 void keyboardInput(unsigned char key, int x, int y);
 void display(void);
@@ -10,8 +11,10 @@ int screenWidth, screenHeight;
 GLfloat theta = 0.57, distance = 400;
 
 Mesh *obj;
+SceneManager *sc;
 
 int main(int argc, char *argv[]) {
+	sc = new SceneManager("scene.scene");
 	obj = new Mesh("box.obj");
 	glutInit(&argc, argv);
 	glutInitWindowSize(500, 500);
