@@ -28,6 +28,7 @@ Camera::Camera(std::string filename) {
 }
 
 void Camera::LoadSettings(std::string filename) {
+	Init();
 	std::ifstream f;
 	f.open(filename);
 	if (!f.is_open()) {

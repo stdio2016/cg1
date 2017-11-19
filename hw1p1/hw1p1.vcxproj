@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DisplayObject.cpp" />
+    <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -21,6 +22,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DisplayObject.h" />
+    <ClInclude Include="LightSystem.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Vec3.h" />

@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 // constants
-const std::string SceneManager::DefaultCameraFileName = "camera.camera";
+const std::string SceneManager::DefaultCameraFileName = "view.view";
+const std::string SceneManager::DefaultLightFileName = "light.light";
 
 SceneManager::SceneManager(): camera()
 {
@@ -16,8 +17,10 @@ SceneManager::SceneManager(std::string filename) {
 }
 
 void SceneManager::LoadScene(std::string filename) {
-	// load camera file from
+	// load camera file
 	camera = Camera(SceneManager::DefaultCameraFileName);
+	// load lights file
+	light = LightSystem(SceneManager::DefaultLightFileName);
 }
 
 SceneManager::~SceneManager()
