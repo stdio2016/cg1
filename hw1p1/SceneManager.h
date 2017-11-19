@@ -8,6 +8,9 @@
 class SceneManager
 {
 public:
+	// constants
+	static const std::string DefaultCameraFileName;
+
 	Camera camera;
 	// TODO: display objects
 
