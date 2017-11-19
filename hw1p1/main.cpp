@@ -18,8 +18,7 @@ void display2() {
 }
 
 int main(int argc, char *argv[]) {
-	sc = new SceneManager("scene.scene");
-	obj = new Mesh("box.obj");
+	sc = new SceneManager(SceneManager::DefaultSceneFileName);
 	glutInit(&argc, argv);
 	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);

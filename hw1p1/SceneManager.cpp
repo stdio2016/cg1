@@ -3,9 +3,9 @@
 #include "include/glut.h"
 
 // constants
-const std::string SceneManager::DefaultCameraFileName = "view.view";
-const std::string SceneManager::DefaultLightFileName = "light.light";
-const std::string SceneManager::DefaultSceneFileName = "scene.scene";
+const std::string SceneManager::DefaultCameraFileName = "scene2.view";
+const std::string SceneManager::DefaultLightFileName = "scene2.light";
+const std::string SceneManager::DefaultSceneFileName = "scene2.scene";
 
 SceneManager::SceneManager(): camera()
 {
@@ -123,9 +123,9 @@ void SceneManager::lightSetup() {
 
 void SceneManager::drawObject(DisplayObject obj) {
 	glPushMatrix();
-	glScalef(obj.scale[0], obj.scale[1], obj.scale[2]);
-	glRotatef((GLfloat)obj.angle, obj.rotationAxis[0], obj.rotationAxis[1], obj.rotationAxis[2]);
 	glTranslatef(obj.transform[0], obj.transform[1], obj.transform[2]);
+	glRotatef((GLfloat)obj.angle, obj.rotationAxis[0], obj.rotationAxis[1], obj.rotationAxis[2]);
+	glScalef(obj.scale[0], obj.scale[1], obj.scale[2]);
 
 	drawObject(meshes[obj.meshIndex-1]);
 
