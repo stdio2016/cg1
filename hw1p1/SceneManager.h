@@ -39,7 +39,9 @@ public:
 	~SceneManager();
 private:
 	// draw a mesh object
-	void drawObject(DisplayObject *obj);
+	void drawObject(DisplayObject obj);
+	void drawObject(Mesh *mesh);
+	void setMaterial(const Material &mat);
 
 	// light setting
 	void lightSetup(void);

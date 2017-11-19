@@ -13,16 +13,20 @@ GLfloat theta = 0.57, distance = 400;
 Mesh *obj;
 SceneManager *sc;
 
+void display2() {
+	sc->display();
+}
+
 int main(int argc, char *argv[]) {
 	sc = new SceneManager("scene.scene");
 	obj = new Mesh("box.obj");
 	glutInit(&argc, argv);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutCreateWindow("Assignment 1-1");
 	glutKeyboardFunc(keyboardInput);
-	glutDisplayFunc(display);
+	glutDisplayFunc(display2);
 	glutReshapeFunc(reshape);
 	glutMainLoop();
 }
