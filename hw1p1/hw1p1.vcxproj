@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DisplayObject.cpp" />
+    <ClCompile Include="FileName.cpp" />
     <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />

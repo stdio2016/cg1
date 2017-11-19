@@ -16,4 +16,7 @@ public:
 	Vec3(float x, float y, float z) {
 		p[0] = x, p[1] = y, p[2] = z;
 	}
+	float magnitude(void);
+	Vec3 operator+(Vec3 b) const;
+	Vec3 operator-(Vec3 b) const;
 };
