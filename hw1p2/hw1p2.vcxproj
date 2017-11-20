@@ -121,6 +121,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TextureMapping.cpp" />
     <ClCompile Include="Vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +130,7 @@
     <ClInclude Include="LightSystem.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="TextureMapping.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

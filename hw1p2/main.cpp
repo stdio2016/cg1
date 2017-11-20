@@ -15,12 +15,16 @@ int screenWidth, screenHeight;
 SceneManager *sc;
 
 int main(int argc, char *argv[]) {
-	sc = new SceneManager(SceneManager::DefaultSceneFileName);
 	glutInit(&argc, argv);
+	sc = new SceneManager();
+	// load viewport settings
+	sc->camera.LoadSettings(SceneManager::DefaultCameraFileName);
 	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutCreateWindow("Assignment 1-2");
+	// after gl initialize
+	sc->LoadScene(SceneManager::DefaultSceneFileName);
 	glutKeyboardFunc(keyboardInput);
 	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);

@@ -5,9 +5,11 @@
 #include "LightSystem.h"
 #include "Mesh.h"
 #include "DisplayObject.h"
+#include "TextureMapping.h"
 #include <string>
 #include <vector>
 #include <map>
+#include "include/glut.h"
 
 class SceneManager
 {
@@ -24,6 +26,7 @@ public:
 	std::vector<DisplayObject> displayObjs;
 	std::map<std::string, size_t> meshMap;
 	std::vector<Mesh *> meshes;
+	std::vector<TextureMapping *> textureMappings;
 
 	// initializer
 	SceneManager(void);
@@ -39,6 +42,9 @@ public:
 	// destructor
 	~SceneManager();
 private:
+	// load texture
+	int LoadTexture(std::string filename, GLuint texId);
+
 	// draw a mesh object
 	void drawObject(DisplayObject obj);
 	void drawObject(Mesh *mesh);

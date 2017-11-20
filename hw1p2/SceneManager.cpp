@@ -1,6 +1,9 @@
 #include "SceneManager.h"
 #include <fstream>
 #include "include/glut.h"
+// without this the program cannot link
+#pragma comment (lib, "corona.lib")
+#include "include/corona.h"
 
 SceneManager::SceneManager(): camera()
 {
@@ -16,9 +19,36 @@ SceneManager::SceneManager(std::string filename) {
 	LoadScene(filename);
 }
 
+int SceneManager::LoadTexture(std::string filename, GLuint texId) {
+	filename = SceneManager::DefaultModelFolder + filename;
+	corona::File *f = corona::OpenFile(filename.c_str(), false);
+	if (f == NULL) {
+		printf("Unable to open file %s\n", filename.c_str());
+		return -1;
+	}
+	corona::Image *img = corona::OpenImage(f, corona::FileFormat::FF_AUTODETECT, corona::PixelFormat::PF_R8G8B8A8);
+	if (img == NULL) {
+		printf("Unable to load texture %s\n", filename.c_str());
+		return -1;
+	}
+	printf("loaded texture %s, tex id = %u\n", filename.c_str(), texId);
+	int iWidth = img->getWidth();
+	int iHeight = img->getHeight();
+	
+	glBindTexture(GL_TEXTURE_2D, texId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, img->getPixels());
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	delete img;
+	return 0;
+}
+
 void SceneManager::LoadScene(std::string filename) {
-	// load camera file
-	camera = Camera(SceneManager::DefaultCameraFileName);
+	// camera need to be loaded before gl init
+	// but scene need gl context
+	//camera = Camera(SceneManager::DefaultCameraFileName);
 	// load lights file
 	light = LightSystem(SceneManager::DefaultLightFileName);
 	// load scene file
@@ -28,6 +58,13 @@ void SceneManager::LoadScene(std::string filename) {
 		printf("Cannot open file \"%s\"\n", filename.c_str());
 		return;
 	}
+	for (size_t i = 0; i < textureMappings.size(); i++) {
+		delete textureMappings[i];
+	}
+	textureMappings.clear();
+	TextureMapping *def = new TextureMapping;
+	textureMappings.push_back(def);
+	size_t texIndex = 0;
 	while (!f.eof()) {
 		std::string cmd;
 		f >> cmd;
@@ -44,11 +81,26 @@ void SceneManager::LoadScene(std::string filename) {
 				meshMap[name] = meshId;
 			}
 			obj.meshIndex = meshId;
+			obj.texIndex = texIndex;
 			f >> obj.scale[0] >> obj.scale[1] >> obj.scale[2];
 			f >> obj.angle;
 			f >> obj.rotationAxis[0] >> obj.rotationAxis[1] >> obj.rotationAxis[2];
 			f >> obj.transform[0] >> obj.transform[1] >> obj.transform[2];
 			displayObjs.push_back(obj);
+		}
+		else if (cmd.compare("no-texture") == 0) {
+			textureMappings.push_back(new NoTextureMapping);
+			texIndex++;
+		}
+		else if (cmd.compare("single-texture") == 0) {
+			std::string name;
+			GLuint texId;
+			f >> name;
+			glGenTextures(1, &texId);
+			printf("error %d\n", glGetError());
+			LoadTexture(name, texId);
+			textureMappings.push_back(new SingleTextureMapping(texId));
+			texIndex++;
 		}
 	}
 	f.close();
@@ -69,6 +121,10 @@ void SceneManager::display() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.5f);
 
 	cameraSetup();
 	lightSetup();
@@ -123,6 +179,7 @@ void SceneManager::drawObject(DisplayObject obj) {
 	glRotatef((GLfloat)obj.angle, obj.rotationAxis[0], obj.rotationAxis[1], obj.rotationAxis[2]);
 	glScalef(obj.scale[0], obj.scale[1], obj.scale[2]);
 
+	textureMappings[obj.texIndex]->switchTexture();
 	drawObject(meshes[obj.meshIndex-1]);
 
 	glPopMatrix();
@@ -139,6 +196,7 @@ void SceneManager::drawObject(Mesh *obj) {
 			glBegin(GL_TRIANGLES);
 		}
 		for (int j = 0; j < 3; j++) {
+			glTexCoord2fv(obj->tList[obj->faceList[i].v[j].t].p);
 			glNormal3fv(obj->nList[obj->faceList[i].v[j].n].p);
 			glVertex3fv(obj->vList[obj->faceList[i].v[j].v].p);
 		}

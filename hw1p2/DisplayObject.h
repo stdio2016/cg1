@@ -4,6 +4,7 @@ class DisplayObject
 {
 public:
 	size_t meshIndex;
+	size_t texIndex;
 	Vec3 scale;
 	float angle;
 	Vec3 rotationAxis;
