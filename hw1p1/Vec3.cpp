@@ -10,7 +10,7 @@ Vec3 Vec3::operator-(Vec3 b) const {
 }
 
 Vec3 Vec3::operator+(Vec3 b) const {
-	return Vec3(p[0] - b[0], p[1] - b[1], p[2] - b[2]);
+	return Vec3(p[0] + b[0], p[1] + b[1], p[2] + b[2]);
 }
 
 Vec3 Vec3::operator* (float ratio) const {

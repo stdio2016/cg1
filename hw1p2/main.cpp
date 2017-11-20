@@ -80,7 +80,7 @@ void mouseDrag(int x, int y) {
 	Vec3 front = sc->camera.vat - sc->camera.eye;
 	front = front * (1 / front.magnitude());
 	Vec3 up = sc->camera.vup;
-	Vec3 right = up.cross(front);
+	Vec3 right = front.cross(up);
 	up = right.cross(front);
 	up = up * (1 / up.magnitude());
 	right = right * (1 / right.magnitude());
