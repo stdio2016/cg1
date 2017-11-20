@@ -37,6 +37,7 @@ void SceneManager::LoadScene(std::string filename) {
 			DisplayObject obj;
 			size_t meshId = meshMap[name];
 			if (meshId == 0) {
+				name = DefaultModelFolder + name;
 				Mesh *m = new Mesh(name.c_str());
 				meshes.push_back(m);
 				meshId = meshes.size();

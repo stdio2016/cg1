@@ -1,9 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Mesh.h"
+#include "SceneManager.h"
 #include <cstdio>
-
-// set mtl file location
-const char *obj_database = "";
 
 Material::Material() {
 	Init();
@@ -86,7 +84,7 @@ void Mesh::LoadMesh(std::string filename) {
 		else if (strcmp(cmd, "mtllib") == 0) {
 			char name[50];
 			if (fscanf(f, "%40s", name) == 1) {
-				LoadMaterial(std::string(obj_database) + std::string(name));
+				LoadMaterial(SceneManager::DefaultModelFolder + std::string(name));
 			}
 		}
 		else if (strcmp(cmd, "v") == 0) {

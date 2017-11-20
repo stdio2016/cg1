@@ -16,6 +16,7 @@ public:
 	static const std::string DefaultCameraFileName;
 	static const std::string DefaultLightFileName;
 	static const std::string DefaultSceneFileName;
+	static const std::string DefaultModelFolder;
 
 	Camera camera;
 	LightSystem light;
