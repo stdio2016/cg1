@@ -5,6 +5,9 @@ public:
 	float p[3];
 	inline float operator[] (size_t i) const { return p[i]; }
 	inline float& operator[] (size_t i) { return p[i]; }
+	inline float x() const { return p[0]; }
+	inline float y() const { return p[1]; }
+	inline float z() const { return p[2]; }
 	Vec3() {
 		p[0] = p[1] = p[2] = 0.0f;
 	}
@@ -19,4 +22,9 @@ public:
 	float magnitude(void);
 	Vec3 operator+(Vec3 b) const;
 	Vec3 operator-(Vec3 b) const;
+	Vec3 operator*(float ratio) const;
+	// cross product
+	Vec3 cross(Vec3 b) const;
+	// dot product
+	float dot(Vec3 b) const;
 };

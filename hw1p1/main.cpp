@@ -44,14 +44,14 @@ void keyboardInput(unsigned char key, int x, int y) {
 		}
 		break;
 	case 'a': case 'A':
-		sc->camera.eye = Vec3(eye[0] * a + eye[2] * b, eye[1], -eye[0] * b + eye[2] * a) + sc->camera.vat;
+		sc->camera.eye = Vec3(eye[0] * a - eye[2] * b, eye[1], eye[0] * b + eye[2] * a) + sc->camera.vat;
 		break;
 	case 'd': case 'D':
-		sc->camera.eye = Vec3(eye[0] * a - eye[2] * b, eye[1], eye[0] * b + eye[2] * a) + sc->camera.vat;
+		sc->camera.eye = Vec3(eye[0] * a + eye[2] * b, eye[1], -eye[0] * b + eye[2] * a) + sc->camera.vat;
 		break;
 	}
 	if (key >= '1' && key <= '9') {
-		int idx = key - '1';
+		size_t idx = key - '1';
 		if (idx < sc->displayObjs.size()) {
 			selection = idx;
 		}
@@ -74,10 +74,23 @@ void mouseClick(int button, int state, int x, int y) {
 }
 
 void mouseDrag(int x, int y) {
-	const float ratio = (sc->camera.vat - sc->camera.eye).magnitude() / sc->camera.viewWidth;
 	printf("mouse drag to %d,%d\n", x, y);
-	sc->displayObjs[selection].transform[0] += (x - lastX) * ratio;
-	sc->displayObjs[selection].transform[1] += (lastY - y) * ratio;
+	// calculate eye coordinate axes
+	Vec3 front = sc->camera.vat - sc->camera.eye;
+	front = front * (1 / front.magnitude());
+	Vec3 up = sc->camera.vup;
+	Vec3 right = up.cross(front);
+	up = right.cross(front);
+	up = up * (1 / up.magnitude());
+	right = right * (1 / right.magnitude());
+	// calculate ratio
+	Vec3 p = sc->displayObjs[selection].transform - sc->camera.eye;
+	float ratio = p.dot(front) / sc->camera.viewHeight;
+	ratio *= 2.0f * tanf(sc->camera.fovy * (3.14159265f / 360.0f));
+	// calculate delta
+	p = sc->displayObjs[selection].transform;
+	p = p + right * ((x - lastX) * ratio) + up * ((lastY - y) * ratio);
+	sc->displayObjs[selection].transform = p;
 	lastX = x;
 	lastY = y;
 	glutPostRedisplay();
