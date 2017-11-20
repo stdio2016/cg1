@@ -75,6 +75,7 @@ void mouseClick(int button, int state, int x, int y) {
 
 void mouseDrag(int x, int y) {
 	printf("mouse drag to %d,%d\n", x, y);
+	if (selection >= sc->displayObjs.size()) return ;
 	// calculate eye coordinate axes
 	Vec3 front = sc->camera.vat - sc->camera.eye;
 	front = front * (1 / front.magnitude());
