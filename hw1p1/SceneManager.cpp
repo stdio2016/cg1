@@ -71,6 +71,8 @@ void SceneManager::display() {
 
 	cameraSetup();
 	lightSetup();
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	for (size_t i = 0; i < displayObjs.size(); i++) {
 		drawObject(displayObjs[i]);
 	}
