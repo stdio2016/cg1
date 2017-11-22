@@ -2,7 +2,7 @@
 #include "Mesh.h"
 #include "SceneManager.h"
 #include <cstdio>
-
+#include <cstring>
 Material::Material() {
 	Init();
 }

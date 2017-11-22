@@ -1,4 +1,5 @@
 #pragma once
+#include<cstddef>
 struct Vec3 // stores (x,y,z)
 {
 public:

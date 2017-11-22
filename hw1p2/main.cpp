@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 	sc->camera.LoadSettings(SceneManager::DefaultCameraFileName);
 	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("Assignment 1-2");
 	// after gl initialize
 	sc->LoadScene(SceneManager::DefaultSceneFileName);
