@@ -1,9 +1,10 @@
-#include <GL/glew.h>
+#include "include/GL/glew.h"
 #include "SceneManager.h"
 #include <fstream>
 #include <cstring>
 #include "include/glut.h"
 // without this the program cannot link
+#pragma comment (lib, "glew32.lib")
 #pragma comment (lib, "corona.lib")
 #include "include/corona.h"
 

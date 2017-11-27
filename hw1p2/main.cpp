@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cmath>
-#include <GL/glew.h>
+#include "include/GL/glew.h"
 #include "include/glut.h"
 #include "SceneManager.h"
 
@@ -97,7 +97,7 @@ void mouseDrag(int x, int y) {
 	// calculate ratio
 	Vec3 p = sc->displayObjs[selection].transform - sc->camera.eye;
 	float ratio = p.dot(front) / sc->camera.viewHeight;
-	ratio *= 2.0f * tanf(sc->camera.fovy * (3.14159265f / 360.0f));
+	ratio *= 2.0f * tanf((float)sc->camera.fovy * (3.14159265f / 360.0f));
 	// calculate delta
 	p = sc->displayObjs[selection].transform;
 	p = p + right * ((x - lastX) * ratio) + up * ((lastY - y) * ratio);
