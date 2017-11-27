@@ -52,6 +52,7 @@ static MyImg getTexture(std::string filename) {
 	for (int i = 0; i < m.height; i++) {
 		memcpy(m.pixels + i * w, p + (m.height - i - 1) * w, w);
 	}
+	delete img;
 	return m;
 }
 
@@ -60,8 +61,8 @@ int SceneManager::LoadTexture(std::string filename, GLuint texId) {
 	if (img.pixels == NULL) return -1;
 	
 	glBindTexture(GL_TEXTURE_2D, texId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width, img.height,
 		0, GL_RGBA, GL_UNSIGNED_BYTE, img.pixels);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -84,8 +85,8 @@ int SceneManager::LoadCubemapTexture(std::string files[6], GLuint texId) {
 		delete img.pixels;
 	}
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL,0);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL,10);
@@ -118,10 +119,10 @@ void SceneManager::LoadScene(std::string filename) {
 		if (cmd.compare("model") == 0) {
 			std::string name;
 			f >> name;
+			name = DefaultModelFolder + name;
 			DisplayObject obj;
 			size_t meshId = meshMap[name];
 			if (meshId == 0) {
-				name = DefaultModelFolder + name;
 				Mesh *m = new Mesh(name.c_str());
 				meshes.push_back(m);
 				meshId = meshes.size();

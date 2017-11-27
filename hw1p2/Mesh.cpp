@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 Material::Material() {
 	Init();
 }
@@ -148,7 +149,7 @@ void Mesh::LoadMesh(std::string filename) {
 	nTotal = nList.size();
 	tTotal = tList.size();
 	fTotal = faceList.size();
-	printf("loaded vertex x %d, normal x %d, texture x %d, face x %d\n", vTotal-1, nTotal-1, tTotal-1, fTotal);
+	std::cout << "loaded vertex x " << (vTotal-1) << ", normal x " << (nTotal-1) << ", texture x " << (tTotal-1) << ", face x " << fTotal << std::endl;
 }
 
 void Mesh::LoadMaterial(std::string filename) {
