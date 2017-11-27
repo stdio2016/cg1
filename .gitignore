@@ -4,3 +4,5 @@
 *.VC.VC.opendb
 workingDir
 /*/.vs
+*.o
+*.d
