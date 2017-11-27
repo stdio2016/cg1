@@ -1,9 +1,11 @@
+#include <GL/glew.h>
 #include "SceneManager.h"
 #include <fstream>
 #include "include/glut.h"
 // without this the program cannot link
 #pragma comment (lib, "corona.lib")
 #include "include/corona.h"
+
 
 SceneManager::SceneManager(): camera()
 {
@@ -19,28 +21,38 @@ SceneManager::SceneManager(std::string filename) {
 	LoadScene(filename);
 }
 
-int SceneManager::LoadTexture(std::string filename, GLuint texId) {
+static corona::Image *getTexture(std::string filename) {
 	filename = SceneManager::DefaultModelFolder + filename;
 	corona::File *f = corona::OpenFile(filename.c_str(), false);
 	if (f == NULL) {
 		printf("Unable to open file %s\n", filename.c_str());
-		return -1;
+		return NULL;
 	}
 	corona::Image *img = corona::OpenImage(f, corona::FileFormat::FF_AUTODETECT, corona::PixelFormat::PF_R8G8B8A8);
 	if (img == NULL) {
 		printf("Unable to load texture %s\n", filename.c_str());
-		return -1;
+		return NULL;
 	}
-	printf("loaded texture %s, tex id = %u\n", filename.c_str(), texId);
+	printf("loaded texture %s\n", filename.c_str());
+	return img;
+}
+
+int SceneManager::LoadTexture(std::string filename, GLuint texId) {
+	corona::Image *img = getTexture(filename);
+	if (img == NULL) return -1;
 	int iWidth = img->getWidth();
 	int iHeight = img->getHeight();
 	
 	glBindTexture(GL_TEXTURE_2D, texId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight,
 		0, GL_RGBA, GL_UNSIGNED_BYTE, img->getPixels());
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL,0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,10);
 	delete img;
 	return 0;
 }
@@ -102,6 +114,17 @@ void SceneManager::LoadScene(std::string filename) {
 			textureMappings.push_back(new SingleTextureMapping(texId));
 			texIndex++;
 		}
+		else if (cmd.compare("multi-texture") == 0) {
+			std::string name1, name2;
+			GLuint texIds[2];
+			f >> name1 >> name2;
+			glGenTextures(2, texIds);
+			printf("error %d\n", glGetError());
+			LoadTexture(name1, texIds[0]);
+			LoadTexture(name2, texIds[1]);
+			textureMappings.push_back(new MultiTextureMapping(texIds[0], texIds[1]));
+			texIndex++;
+		}
 	}
 	f.close();
 }
@@ -122,7 +145,6 @@ void SceneManager::display() {
 	glDepthFunc(GL_LEQUAL);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.5f);
 
@@ -180,12 +202,12 @@ void SceneManager::drawObject(DisplayObject obj) {
 	glScalef(obj.scale[0], obj.scale[1], obj.scale[2]);
 
 	textureMappings[obj.texIndex]->switchTexture();
-	drawObject(meshes[obj.meshIndex-1]);
-
+	drawObject(meshes[obj.meshIndex-1], textureMappings[obj.texIndex]);
+	textureMappings[obj.texIndex]->rollback();
 	glPopMatrix();
 }
 
-void SceneManager::drawObject(Mesh *obj) {
+void SceneManager::drawObject(Mesh *obj, const TextureMapping *tm) {
 	int lastMaterial = -1;
 	glBegin(GL_TRIANGLES);
 	for (size_t i = 0; i < obj->fTotal; i++) {
@@ -195,11 +217,12 @@ void SceneManager::drawObject(Mesh *obj) {
 			setMaterial(obj->mList[lastMaterial]);
 			glBegin(GL_TRIANGLES);
 		}
-		for (int j = 0; j < 3; j++) {
+		tm->handleMeshTexture(obj, i);
+		/*for (int j = 0; j < 3; j++) {
 			glTexCoord2fv(obj->tList[obj->faceList[i].v[j].t].p);
 			glNormal3fv(obj->nList[obj->faceList[i].v[j].n].p);
 			glVertex3fv(obj->vList[obj->faceList[i].v[j].v].p);
-		}
+		}*/
 	}
 	glEnd();
 }

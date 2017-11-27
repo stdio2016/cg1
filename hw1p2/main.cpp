@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cmath>
+#include <GL/glew.h>
 #include "include/glut.h"
 #include "SceneManager.h"
 
@@ -23,6 +24,11 @@ int main(int argc, char *argv[]) {
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("Assignment 1-2");
+
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		printf("%s\n", glewGetErrorString(err));
+	}
 	// after gl initialize
 	sc->LoadScene(SceneManager::DefaultSceneFileName);
 	glutKeyboardFunc(keyboardInput);
@@ -38,12 +44,12 @@ void keyboardInput(unsigned char key, int x, int y) {
 	const float ratio = 1.05f;
 	switch (key) {
 	case 'w': case 'W':
-		if (sc->camera.eye.magnitude() > sc->camera.dnear) {
+		if (eye.magnitude() > sc->camera.dnear) {
 			sc->camera.eye = Vec3(eye[0] / ratio, eye[1] / ratio, eye[2] / ratio) + sc->camera.vat;
 		}
 		break;
 	case 's': case 'S':
-		if (sc->camera.eye.magnitude() < sc->camera.dfar) {
+		if (eye.magnitude() < sc->camera.dfar) {
 			sc->camera.eye = Vec3(eye[0] * ratio, eye[1] * ratio, eye[2] * ratio) + sc->camera.vat;
 		}
 		break;

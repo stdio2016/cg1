@@ -47,7 +47,7 @@ private:
 
 	// draw a mesh object
 	void drawObject(DisplayObject obj);
-	void drawObject(Mesh *mesh);
+	void drawObject(Mesh *mesh, const TextureMapping *tm);
 	void setMaterial(const Material &mat);
 
 	// light setting

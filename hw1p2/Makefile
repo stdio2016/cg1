@@ -3,9 +3,10 @@ SRCS = Camera.cpp DisplayObject.cpp FileName.cpp LightSystem.cpp main.cpp Mesh.c
 OBJDIR = ./obj
 df = $(OBJDIR)/$(*F)
 
-CPPFLAGS += -Wall
+CPPFLAGS += -Wall -fno-pie
+LDFLAGS += -no-pie
 DEPFLAGS =  -MD -MP -MM
-LIBS = -lz -lm -lGL -lGLU -lglut lib/libcorona.a -lpng -ljpeg
+LIBS = -lz -lm -lGLEW -lGL -lGLU -lglut lib/libcorona.a -lpng -ljpeg
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS = $(OBJS:%.o=%.d)
 
