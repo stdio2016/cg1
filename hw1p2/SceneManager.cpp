@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include "SceneManager.h"
 #include <fstream>
+#include <cstring>
 #include "include/glut.h"
 // without this the program cannot link
 #pragma comment (lib, "corona.lib")
@@ -21,39 +22,73 @@ SceneManager::SceneManager(std::string filename) {
 	LoadScene(filename);
 }
 
-static corona::Image *getTexture(std::string filename) {
+struct MyImg {
+	int width, height;
+	unsigned char *pixels;
+};
+
+static MyImg getTexture(std::string filename) {
+	MyImg m;
+	m.pixels = NULL;
 	filename = SceneManager::DefaultModelFolder + filename;
 	corona::File *f = corona::OpenFile(filename.c_str(), false);
 	if (f == NULL) {
 		printf("Unable to open file %s\n", filename.c_str());
-		return NULL;
+		return m;
 	}
 	corona::Image *img = corona::OpenImage(f, corona::FileFormat::FF_AUTODETECT, corona::PixelFormat::PF_R8G8B8A8);
 	if (img == NULL) {
 		printf("Unable to load texture %s\n", filename.c_str());
-		return NULL;
+		return m;
 	}
 	printf("loaded texture %s\n", filename.c_str());
-	return img;
+	m.width = img->getWidth();
+	m.height = img->getHeight();
+	m.pixels = new unsigned char[m.width * m.height * 4];
+	// flip image around y axis
+	const void *pix = img->getPixels();
+	const unsigned char *p = (const unsigned char *) pix;
+	size_t w = m.width * 4;
+	for (int i = 0; i < m.height; i++) {
+		memcpy(m.pixels + i * w, p + (m.height - i - 1) * w, w);
+	}
+	return m;
 }
 
 int SceneManager::LoadTexture(std::string filename, GLuint texId) {
-	corona::Image *img = getTexture(filename);
-	if (img == NULL) return -1;
-	int iWidth = img->getWidth();
-	int iHeight = img->getHeight();
+	MyImg img = getTexture(filename);
+	if (img.pixels == NULL) return -1;
 	
 	glBindTexture(GL_TEXTURE_2D, texId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight,
-		0, GL_RGBA, GL_UNSIGNED_BYTE, img->getPixels());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width, img.height,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, img.pixels);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL,0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,10);
-	delete img;
+	delete img.pixels;
+	return 0;
+}
+
+int SceneManager::LoadCubemapTexture(std::string files[6], GLuint texId) {
+	const GLenum sides[6] = {GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texId);
+	for (int i = 0; i < 6; i++) {
+		MyImg img = getTexture(files[i]);
+		if (img.pixels == NULL) return -1;
+
+		glTexImage2D(sides[i], 0, GL_RGBA, img.width, img.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.pixels);
+		delete img.pixels;
+	}
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL,0);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL,10);
 	return 0;
 }
 
@@ -123,6 +158,18 @@ void SceneManager::LoadScene(std::string filename) {
 			LoadTexture(name1, texIds[0]);
 			LoadTexture(name2, texIds[1]);
 			textureMappings.push_back(new MultiTextureMapping(texIds[0], texIds[1]));
+			texIndex++;
+		}
+		else if (cmd.compare("cube-map") == 0) {
+			std::string names[6];
+			GLuint texId;
+			for (int i = 0; i < 6; i++) {
+				f >> names[i];
+			}
+			glGenTextures(1, &texId);
+			printf("error %d\n", glGetError());
+			LoadCubemapTexture(names, texId);
+			textureMappings.push_back(new CubeMapMapping(texId));
 			texIndex++;
 		}
 	}

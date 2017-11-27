@@ -99,7 +99,7 @@ void Mesh::LoadMesh(std::string filename) {
 		}
 		else if (strcmp(cmd, "vt") == 0) {
 			if (fscanf(f, "%f %f", &x, &y) == 2) {
-				tList.push_back(Vec3(x, 1.0f-y, 0));
+				tList.push_back(Vec3(x, y, 0));
 			}
 		}
 		else if (strcmp(cmd, "usemtl") == 0) {

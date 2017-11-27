@@ -88,3 +88,28 @@ void MultiTextureMapping::handleMeshTexture(Mesh *obj, size_t i) const {
 		glVertex3fv(obj->vList[obj->faceList[i].v[j].v].p);
 	}
 }
+
+CubeMapMapping::CubeMapMapping(GLuint tex): SingleTextureMapping(tex) {
+	;
+}
+
+void CubeMapMapping::switchTexture() {
+	glActiveTexture(GL_TEXTURE0);
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+	glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_R);
+	glEnable(GL_TEXTURE_CUBE_MAP);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texId);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+}
+
+void CubeMapMapping::rollback() {
+	glDisable(GL_TEXTURE_CUBE_MAP);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	glDisable(GL_TEXTURE_GEN_R);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_S);
+}

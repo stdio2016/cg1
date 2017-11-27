@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
 void keyboardInput(unsigned char key, int x, int y) {
 	Vec3 eye = sc->camera.eye - sc->camera.vat;
-	const float b = 0.1f, a = sqrtf(1 - b * b);
+	const float b = 0.05f, a = sqrtf(1 - b * b);
 	const float ratio = 1.05f;
 	switch (key) {
 	case 'w': case 'W':

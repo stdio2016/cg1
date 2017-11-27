@@ -35,3 +35,10 @@ public:
 	virtual void rollback(void);
 	virtual void handleMeshTexture(Mesh *obj, size_t i) const;
 };
+
+class CubeMapMapping : public SingleTextureMapping {
+public:
+	CubeMapMapping(GLuint texId);
+	virtual void switchTexture(void);
+	virtual void rollback(void);
+};

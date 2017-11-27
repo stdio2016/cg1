@@ -44,6 +44,7 @@ public:
 private:
 	// load texture
 	int LoadTexture(std::string filename, GLuint texId);
+	int LoadCubemapTexture(std::string files[6], GLuint texids);
 
 	// draw a mesh object
 	void drawObject(DisplayObject obj);
