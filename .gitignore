@@ -2,7 +2,12 @@
 /*/Release
 *.VC.db
 *.VC.VC.opendb
-workingDir
+hw1p1/workingDir/*
+hw1p2/workingDir/*
+hw2/workingDir/Assignment2_TestScene
 /*/.vs
 *.o
 *.d
+!workingDir/corona.dll
+!workingDir/freeglut.dll
+!workingDir/glew32.dll
