@@ -58,7 +58,9 @@ private:
 	void cameraSetup(void);
 
 	// maybe one day it will be useful
-	void drawSceneInMirror();
+	void drawSceneInMirror(int mirror1, float mirror1x, int mirror2, float mirror2x);
+	void drawSceneInMirror(int mirror, int level, float mirrorX);
+	void drawScene(void);
 };
 
 #endif
