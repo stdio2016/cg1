@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 	sc->camera.LoadSettings(SceneManager::DefaultCameraFileName);
 	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
 	glutCreateWindow("Assignment 2");
 
 	GLenum err = glewInit();

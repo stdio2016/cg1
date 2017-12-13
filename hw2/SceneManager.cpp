@@ -8,6 +8,9 @@
 #pragma comment (lib, "corona.lib")
 #include "include/corona.h"
 
+// mirror index
+#define MIRROR1  10
+#define MIRROR2  11
 
 SceneManager::SceneManager(): camera()
 {
@@ -192,20 +195,49 @@ void SceneManager::display() {
 	glClearDepth(1.0);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glClearStencil(0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
+	glEnable(GL_CULL_FACE);
 
 	Camera a = camera;
-	
+	cameraSetup();
+	glEnable(GL_STENCIL_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+	glFrontFace(GL_CCW);
+	drawObject(displayObjs[MIRROR1]);
+	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
 	drawSceneInMirror();
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	drawSceneInMirror();
+
+	glMatrixMode(GL_MODELVIEW);
+	glTranslatef(-80, 0, 0);
+	glScalef(-1, 1, 1);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glFrontFace(GL_CW);
+	glClearDepth(1.0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	drawSceneInMirror();
+	glDisable(GL_STENCIL_TEST);
+
 	camera = a;
 	glutSwapBuffers();
 }
 
 void SceneManager::drawSceneInMirror() {
-	cameraSetup();
 	lightSetup();
 	for (size_t i = 0; i < displayObjs.size(); i++) {
-		drawObject(displayObjs[i]);
+		if (i != MIRROR1 && i != MIRROR2)
+			drawObject(displayObjs[i]);
 	}
 }
 

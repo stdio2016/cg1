@@ -58,7 +58,7 @@ private:
 	void cameraSetup(void);
 
 	// maybe one day it will be useful
-	void drawSceneInMirror(void);
+	void drawSceneInMirror();
 };
 
 #endif
