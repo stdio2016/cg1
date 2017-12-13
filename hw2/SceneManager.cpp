@@ -194,15 +194,19 @@ void SceneManager::display() {
 	glDepthFunc(GL_LEQUAL);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.5f);
+	Camera a = camera;
+	
+	drawSceneInMirror();
+	camera = a;
+	glutSwapBuffers();
+}
 
+void SceneManager::drawSceneInMirror() {
 	cameraSetup();
 	lightSetup();
 	for (size_t i = 0; i < displayObjs.size(); i++) {
 		drawObject(displayObjs[i]);
 	}
-	glutSwapBuffers();
 }
 
 void SceneManager::cameraSetup() {
