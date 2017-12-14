@@ -11,3 +11,4 @@ hw2/workingDir/Assignment2_TestScene
 !workingDir/corona.dll
 !workingDir/freeglut.dll
 !workingDir/glew32.dll
+*.zip
