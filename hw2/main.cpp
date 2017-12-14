@@ -59,6 +59,15 @@ void keyboardInput(unsigned char key, int x, int y) {
 	case 'd': case 'D':
 		sc->camera.eye = Vec3(eye[0] * a + eye[2] * b, eye[1], -eye[0] * b + eye[2] * a) + sc->camera.vat;
 		break;
+	case '1':
+		sc->camera.focus = Vec3(-10,12,0);
+		break;
+	case '2':
+		sc->camera.focus = Vec3(-50,12,0); // first reflecction at -70,12,0
+		break;
+	case '3':
+		sc->camera.focus = Vec3(-400,12,0); // second reflection at -170,12,0
+		break;
 	case '+':
 		selection += 10;
 		if (selection >= sc->displayObjs.size()) {
