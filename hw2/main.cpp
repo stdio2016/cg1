@@ -6,7 +6,7 @@
 
 void keyboardInput(unsigned char key, int x, int y);
 int lastX, lastY;
-int selection = 0;
+size_t selection = 0;
 void mouseClick(int button, int state, int x, int y);
 void mouseDrag(int x, int y);
 void display(void);
@@ -59,9 +59,21 @@ void keyboardInput(unsigned char key, int x, int y) {
 	case 'd': case 'D':
 		sc->camera.eye = Vec3(eye[0] * a + eye[2] * b, eye[1], -eye[0] * b + eye[2] * a) + sc->camera.vat;
 		break;
+	case '+':
+		selection += 10;
+		if (selection >= sc->displayObjs.size()) {
+			selection = sc->displayObjs.size() - 1;
+		}
+		break;
+	case '-':
+		selection -= 10;
+		if (selection >= sc->displayObjs.size()) {
+			selection = 0;
+		}
+		break;
 	}
-	if (key >= '1' && key <= '9') {
-		size_t idx = key - '1';
+	if (key >= '0' && key <= '9') {
+		size_t idx = key == '0' ? 9 : key - '1';
 		if (idx < sc->displayObjs.size()) {
 			selection = idx;
 		}

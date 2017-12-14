@@ -202,57 +202,81 @@ void SceneManager::display() {
 	glEnable(GL_CULL_FACE);
 
 	Camera a = camera;
+	cameraSetup();
+	glFrontFace(GL_CCW);
+	glDisable(GL_CLIP_PLANE0);
+	// draw scene
+	drawScene(0);
+	glFrontFace(GL_CW);
+	drawObject(displayObjs[MIRROR1]);
+	drawObject(displayObjs[MIRROR2]);
+	glFrontFace(GL_CCW);
 
-	cameraSetup();
-	drawSceneInMirror(MIRROR1, -40, MIRROR2, 40);
-	camera = a;
-	cameraSetup();
-	drawSceneInMirror(MIRROR2, 40, MIRROR1, -40);
+	// draw mirror
+	float m1x = displayObjs[MIRROR1].transform.x() - 40;
+	float m2x = displayObjs[MIRROR2].transform.x() + 40;
+	glMatrixMode(GL_MODELVIEW);
+	drawSceneInMirror(MIRROR1, m1x, MIRROR2, m2x);
+	drawSceneInMirror(MIRROR2, m2x, MIRROR1, m1x);
 	camera = a;
 
 	glutSwapBuffers();
 }
 
 void SceneManager::drawSceneInMirror(int m1, float m1x, int m2, float m2x) {
-	drawSceneInMirror(m1, 0, m1x);
-	drawSceneInMirror(m2, 1, m2x);
-	drawSceneInMirror(m1, 2, m1x);
-	drawSceneInMirror(m2, 3, m2x);
-	drawSceneInMirror(m1, 4, m1x);
+	glClearStencil(0);
+	glClearDepth(1.0);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glPushMatrix();
+	drawMirrorInStencil(0, m1);
+	drawSceneInStencil(0);
+	glFrontFace(GL_CW);
+	drawObject(displayObjs[m2]);
+	glFrontFace(GL_CCW);
+	float eyex = camera.eye.x();
+	for (int i = 1; i <= 4; i++) {
+		mirrorCamera(((i&1) ? m1 : m2), i, ((i&1) ? m1x : m2x), &eyex);
+		glClearDepth(1.0);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glFrontFace((i&1) ? GL_CW : GL_CCW);
+		drawMirrorInStencil(i, (i & 1 ? m2 : m1));
+		drawSceneInStencil(i);
+		drawScene(i);
+	}
+	glPopMatrix();
 }
 
-void SceneManager::drawSceneInMirror(int mirror, int level, float mirrorX) {
-	// draw mirror on stencil buffer
+void SceneManager::mirrorCamera(int mirror, int level, float mirrorX, float *eyex) {
+	glMatrixMode(GL_MODELVIEW);
+	GLdouble equa[4] = { mirror == MIRROR1 ? 1 : -1, 0, 0, 0 };
+	glTranslatef(mirrorX * 2, 0, 0);
+	glScalef(-1, 1, 1);
+	*eyex = mirrorX * 2 - *eyex;
+	glTranslatef(mirrorX, 0, 0);
+	glClipPlane(GL_CLIP_PLANE0, equa);
+	glTranslatef(-mirrorX, 0, 0);
+	glEnable(GL_CLIP_PLANE0);
+}
+
+void SceneManager::drawMirrorInStencil(int level, int mirror) {
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glClearDepth(1.0);
-	glClear(GL_DEPTH_BUFFER_BIT);
 	glStencilFunc(GL_EQUAL, level, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 	glFrontFace(level % 2 == 0 ? GL_CCW : GL_CW);
 	drawObject(displayObjs[mirror]);
+}
 
-	// remove scene from stencil buffer
+void SceneManager::drawSceneInStencil(int level) {
 	glStencilFunc(GL_EQUAL, level + 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
 	drawScene();
+}
 
-	// draw scene
+void SceneManager::drawScene(int level) {
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glStencilFunc(GL_EQUAL, level, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	drawScene();
-
-	// move camera for next draw
-	glMatrixMode(GL_MODELVIEW);
-	//glTranslatef(displayObjs[mirror].transform.x(), 0, 0);
-	glLoadIdentity();
-	camera.vat[0] = mirrorX * 2 - camera.vat[0];
-	camera.eye[0] = mirrorX * 2 - camera.eye[0];
-	if (level % 2 == 0)
-		glScalef(-1, 1, 1);
-	gluLookAt(camera.eye[0], camera.eye[1], camera.eye[2],// eye
-		camera.vat[0], camera.vat[1], camera.vat[2],     // center
-		camera.vup[0], camera.vup[1], camera.vup[2]);    // up
 }
 
 void SceneManager::drawScene() {
