@@ -202,11 +202,44 @@ void SceneManager::display() {
 	glEnable(GL_CULL_FACE);
 
 	Camera a = camera;
-	cameraSetup();
+	Vec3 front = camera.vat - camera.eye;
+	front = front * (1 / front.magnitude());
+	Vec3 up = camera.vup;
+	Vec3 right = front.cross(up);
+	up = right.cross(front);
+	up = up * (1 / up.magnitude());
+	right = right * (1 / right.magnitude());
+	float jitter[9][2] = {
+		{0.0f, 0.0f}, {0.0f, 0.2f}, {0.0f, -0.2f}, {0.2f, 0.0f}, {-0.2f, 0.0f},
+		{0.2f, 0.2f}, {0.2f, -0.2f}, {-0.2f, 0.2f}, {-0.2f, -0.2f}
+	};
+
+	float r1 = (camera.focus - camera.vat).dot(front);
+	float r2 = (camera.focus - camera.eye).dot(front);
+	float r = r1 / r2;
+
+	for (int i = 0; i < 8; i++) {
+		camera.eye = a.eye + up * jitter[i][0] + right * jitter[i][1];
+		camera.vat = a.vat + up * (r * jitter[i][0]) + right * (r * jitter[i][1]);
+		cameraSetup();
+		drawMirrored();
+		camera = a;
+		if (i == 0)
+			glAccum(GL_LOAD, 1.0 / 8);
+		else
+			glAccum(GL_ACCUM, 1.0 / 8);
+	}
+	glAccum(GL_RETURN, 1);
+	glutSwapBuffers();
+}
+
+void SceneManager::drawMirrored() {
+	glClearDepth(1.0);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glFrontFace(GL_CCW);
-	glDisable(GL_CLIP_PLANE0);
 	// draw scene
-	drawScene(0);
+	drawScene();
 	glFrontFace(GL_CW);
 	drawObject(displayObjs[MIRROR1]);
 	drawObject(displayObjs[MIRROR2]);
@@ -218,9 +251,8 @@ void SceneManager::display() {
 	glMatrixMode(GL_MODELVIEW);
 	drawSceneInMirror(MIRROR1, m1x, MIRROR2, m2x);
 	drawSceneInMirror(MIRROR2, m2x, MIRROR1, m1x);
-	camera = a;
-
-	glutSwapBuffers();
+	glStencilFunc(GL_ALWAYS, 1, 0xff);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 }
 
 void SceneManager::drawSceneInMirror(int m1, float m1x, int m2, float m2x) {
@@ -243,12 +275,13 @@ void SceneManager::drawSceneInMirror(int m1, float m1x, int m2, float m2x) {
 		drawSceneInStencil(i);
 		drawScene(i);
 	}
+	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
 }
 
 void SceneManager::mirrorCamera(int mirror, int level, float mirrorX, float *eyex) {
 	glMatrixMode(GL_MODELVIEW);
-	GLdouble equa[4] = { mirror == MIRROR1 ? 1 : -1, 0, 0, 0 };
+	GLdouble equa[4] = { mirror == MIRROR1 ? 1.0 : -1.0, 0.0, 0.0, 0.0 };
 	glTranslatef(mirrorX * 2, 0, 0);
 	glScalef(-1, 1, 1);
 	*eyex = mirrorX * 2 - *eyex;

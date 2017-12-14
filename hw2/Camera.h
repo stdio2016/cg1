@@ -10,6 +10,7 @@ public:
 	Vec3 eye; // eye position
 	Vec3 vat; // camera look at
 	Vec3 vup; // up vector
+	Vec3 focus;
 	double fovy; // field of view y angle
 	double dnear; // near plane
 	double dfar; // far plane

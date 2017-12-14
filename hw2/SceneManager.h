@@ -58,12 +58,13 @@ private:
 	void cameraSetup(void);
 
 	// maybe one day it will be useful
+	void drawMirrored(void);
 	void drawSceneInMirror(int mirror1, float mirror1x, int mirror2, float mirror2x);
 	void mirrorCamera(int mirror, int level, float mirrorX, float *eyex);
-	void drawScene(void);
 	void drawSceneInStencil(int level);
 	void drawMirrorInStencil(int level, int mirror);
 	void drawScene(int level);
+	void drawScene(void);
 };
 
 #endif

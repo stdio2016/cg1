@@ -13,6 +13,7 @@ void Camera::Init() {
 	eye = Vec3(200, 300, 150);
 	vat = Vec3(0, 0, 0);
 	vup = Vec3(0, 1, 0);
+	focus = Vec3(-10, 12, 0);
 	fovy = 60;
 	dnear = 1;
 	dfar = 1000;
