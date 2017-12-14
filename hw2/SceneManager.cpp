@@ -210,8 +210,8 @@ void SceneManager::display() {
 	up = up * (1 / up.magnitude());
 	right = right * (1 / right.magnitude());
 	float jitter[9][2] = {
-		{0.0f, 0.0f}, {0.0f, 0.2f}, {0.0f, -0.2f}, {0.2f, 0.0f}, {-0.2f, 0.0f},
-		{0.2f, 0.2f}, {0.2f, -0.2f}, {-0.2f, 0.2f}, {-0.2f, -0.2f}
+		{0.0f, 0.0f}, {0.0f, 0.1f}, {0.0f, -0.1f}, {0.1f, 0.0f}, {-0.1f, 0.0f},
+		{0.1f, 0.1f}, {0.1f, -0.1f}, {-0.1f, 0.1f}, {-0.1f, -0.1f}
 	};
 
 	float r1 = (camera.focus - camera.vat).dot(front);
