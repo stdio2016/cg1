@@ -3,6 +3,7 @@
 #include "include/GL/glew.h"
 #include "include/glut.h"
 #include "SceneManager.h"
+//#define DEBUG
 
 void keyboardInput(unsigned char key, int x, int y);
 int lastX, lastY;
@@ -13,6 +14,7 @@ void display(void);
 void reshape(int width, int height);
 int screenWidth, screenHeight;
 
+int frameCount = 0;
 SceneManager *sc;
 
 int main(int argc, char *argv[]) {
@@ -38,35 +40,47 @@ int main(int argc, char *argv[]) {
 	glutMainLoop();
 }
 
+void needRedraw() {
+#ifdef DEBUG
+	sc->slowDraw = false;
+#endif
+	glutPostRedisplay();
+}
+
 void keyboardInput(unsigned char key, int x, int y) {
 	Vec3 eye = sc->camera.eye - sc->camera.vat;
+	Vec3 up = sc->camera.vup;
+	up = up * (1 / up.magnitude());
+	Vec3 right = eye.cross(up);
+	Vec3 front = up.cross(right);
+	up = up * (eye.dot(up));
 	const float b = 0.05f, a = sqrtf(1 - b * b);
 	const float ratio = 1.05f;
 	switch (key) {
 	case 'w': case 'W':
 		if (eye.magnitude() > sc->camera.dnear) {
-			sc->camera.eye = Vec3(eye[0] / ratio, eye[1] / ratio, eye[2] / ratio) + sc->camera.vat;
+			sc->camera.eye = eye * (1/ratio) + sc->camera.vat;
 		}
 		break;
 	case 's': case 'S':
 		if (eye.magnitude() < sc->camera.dfar) {
-			sc->camera.eye = Vec3(eye[0] * ratio, eye[1] * ratio, eye[2] * ratio) + sc->camera.vat;
+			sc->camera.eye = eye * ratio + sc->camera.vat;
 		}
 		break;
 	case 'a': case 'A':
-		sc->camera.eye = Vec3(eye[0] * a - eye[2] * b, eye[1], eye[0] * b + eye[2] * a) + sc->camera.vat;
+		sc->camera.eye = right * b + front * a + up + sc->camera.vat;
 		break;
 	case 'd': case 'D':
-		sc->camera.eye = Vec3(eye[0] * a + eye[2] * b, eye[1], -eye[0] * b + eye[2] * a) + sc->camera.vat;
+		sc->camera.eye = right * -b + front * a + up + sc->camera.vat;
 		break;
 	case '1':
-		sc->camera.focus = Vec3(-10,12,0);
+		sc->camera.vat = Vec3(-10,12,0);
 		break;
 	case '2':
-		sc->camera.focus = Vec3(-50,12,0); // first reflecction at -70,12,0
+		sc->camera.vat = Vec3(-50,12,0); // first reflecction at -70,12,0
 		break;
 	case '3':
-		sc->camera.focus = Vec3(-400,12,0); // second reflection at -170,12,0
+		sc->camera.vat = Vec3(-400,12,0); // second reflection at -170,12,0
 		break;
 	case '+':
 		selection += 10;
@@ -88,7 +102,7 @@ void keyboardInput(unsigned char key, int x, int y) {
 		}
 	}
 	printf("key %d %d %d\n", key, x, y);
-	glutPostRedisplay();
+	needRedraw();
 }
 
 void mouseClick(int button, int state, int x, int y) {
@@ -125,11 +139,22 @@ void mouseDrag(int x, int y) {
 	sc->displayObjs[selection].transform = p;
 	lastX = x;
 	lastY = y;
-	glutPostRedisplay();
+	needRedraw();
+}
+
+void slowDrawCallback(int t) {
+	if (t == frameCount) {
+		sc->slowDraw = true;
+		glutPostRedisplay();
+	}
 }
 
 void display() {
 	sc->display();
+	frameCount++;
+	if (!sc->slowDraw) {
+		glutTimerFunc(1000, slowDrawCallback, frameCount);
+	}
 }
 
 void reshape(int width, int height) {

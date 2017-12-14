@@ -20,10 +20,7 @@ SceneManager::SceneManager(): camera()
 void SceneManager::Init() {
 	camera = Camera();
 	light = LightSystem();
-}
-
-SceneManager::SceneManager(std::string filename) {
-	LoadScene(filename);
+	slowDraw = true;
 }
 
 struct MyImg {
@@ -198,9 +195,18 @@ void SceneManager::display() {
 
 	glClearStencil(0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
-	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
 
+	if (slowDraw)
+		drawDepthOfField();
+	else {
+		cameraSetup();
+		drawMirrored();
+	}
+	glutSwapBuffers();
+}
+
+void SceneManager::drawDepthOfField() {
 	Camera a = camera;
 	Vec3 front = camera.vat - camera.eye;
 	front = front * (1 / front.magnitude());
@@ -210,17 +216,12 @@ void SceneManager::display() {
 	up = up * (1 / up.magnitude());
 	right = right * (1 / right.magnitude());
 	float jitter[9][2] = {
-		{0.0f, 0.0f}, {0.0f, 0.1f}, {0.0f, -0.1f}, {0.1f, 0.0f}, {-0.1f, 0.0f},
-		{0.1f, 0.1f}, {0.1f, -0.1f}, {-0.1f, 0.1f}, {-0.1f, -0.1f}
+		{ 0.0f, 0.0f },{ 0.0f, 0.1f },{ 0.0f, -0.1f },{ 0.1f, 0.0f },{ -0.1f, 0.0f },
+		{ 0.1f, 0.1f },{ 0.1f, -0.1f },{ -0.1f, 0.1f },{ -0.1f, -0.1f }
 	};
-
-	float r1 = (camera.focus - camera.vat).dot(front);
-	float r2 = (camera.focus - camera.eye).dot(front);
-	float r = r1 / r2;
 
 	for (int i = 0; i < 8; i++) {
 		camera.eye = a.eye + up * jitter[i][0] + right * jitter[i][1];
-		camera.vat = a.vat + up * (r * jitter[i][0]) + right * (r * jitter[i][1]);
 		cameraSetup();
 		drawMirrored();
 		camera = a;
@@ -230,7 +231,6 @@ void SceneManager::display() {
 			glAccum(GL_ACCUM, 1.0 / 8);
 	}
 	glAccum(GL_RETURN, 1);
-	glutSwapBuffers();
 }
 
 void SceneManager::drawMirrored() {
@@ -249,10 +249,10 @@ void SceneManager::drawMirrored() {
 	float m1x = displayObjs[MIRROR1].transform.x() - 40;
 	float m2x = displayObjs[MIRROR2].transform.x() + 40;
 	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_STENCIL_TEST);
 	drawSceneInMirror(MIRROR1, m1x, MIRROR2, m2x);
 	drawSceneInMirror(MIRROR2, m2x, MIRROR1, m1x);
-	glStencilFunc(GL_ALWAYS, 1, 0xff);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glDisable(GL_STENCIL_TEST);
 }
 
 void SceneManager::drawSceneInMirror(int m1, float m1x, int m2, float m2x) {

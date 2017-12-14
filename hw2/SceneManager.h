@@ -28,12 +28,13 @@ public:
 	std::vector<Mesh *> meshes;
 	std::vector<TextureMapping *> textureMappings;
 
+	bool slowDraw;
+
 	// initializer
 	SceneManager(void);
 	void Init(void);
 
 	// initialize from file
-	SceneManager(std::string filename);
 	void LoadScene(std::string filename);
 
 	// draw scene
@@ -58,6 +59,7 @@ private:
 	void cameraSetup(void);
 
 	// maybe one day it will be useful
+	void drawDepthOfField(void);
 	void drawMirrored(void);
 	void drawSceneInMirror(int mirror1, float mirror1x, int mirror2, float mirror2x);
 	void mirrorCamera(int mirror, int level, float mirrorX, float *eyex);
