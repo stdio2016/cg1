@@ -4,7 +4,7 @@
 #include "Vec3.h"
 
 struct Light {
-	Vec3 position; // light position
+	float position[4]; // light position
 	float Ia[4]; // ambient term
 	float Id[4]; // diffuse term
 	float Is[4]; // speculat term

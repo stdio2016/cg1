@@ -351,7 +351,7 @@ void SceneManager::lightSetup() {
 		}
 		int GlLightN = glconsts[i];
 		glEnable(GlLightN);
-		glLightfv(GlLightN, GL_POSITION, light.lights[i].position.p);
+		glLightfv(GlLightN, GL_POSITION, light.lights[i].position);
 		glLightfv(GlLightN, GL_DIFFUSE, light.lights[i].Id);
 		glLightfv(GlLightN, GL_SPECULAR, light.lights[i].Is);
 		glLightfv(GlLightN, GL_AMBIENT, light.lights[i].Ia);
