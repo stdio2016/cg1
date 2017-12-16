@@ -74,13 +74,13 @@ void keyboardInput(unsigned char key, int x, int y) {
 		sc->camera.eye = right * -b + front * a + up + sc->camera.vat;
 		break;
 	case '1':
-		sc->camera.vat = Vec3(-10,12,0);
+		sc->camera.vat = Vec3(-10,15,0);
 		break;
 	case '2':
-		sc->camera.vat = Vec3(-50,12,0); // first reflecction at -70,12,0
+		sc->camera.vat = Vec3(-50,15,0); // first reflecction at -70,12,0
 		break;
 	case '3':
-		sc->camera.vat = Vec3(-400,12,0); // second reflection at -170,12,0
+		sc->camera.vat = Vec3(-400,15,0); // second reflection at -170,12,0
 		break;
 	case '+':
 		selection += 10;

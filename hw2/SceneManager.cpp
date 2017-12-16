@@ -201,6 +201,7 @@ void SceneManager::display() {
 		drawDepthOfField();
 	else {
 		cameraSetup();
+		lightSetup();
 		drawMirrored();
 	}
 	glutSwapBuffers();
@@ -220,15 +221,16 @@ void SceneManager::drawDepthOfField() {
 		{ 0.1f, 0.1f },{ 0.1f, -0.1f },{ -0.1f, 0.1f },{ -0.1f, -0.1f }
 	};
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 9; i++) {
 		camera.eye = a.eye + up * jitter[i][0] + right * jitter[i][1];
 		cameraSetup();
+		lightSetup();
 		drawMirrored();
 		camera = a;
 		if (i == 0)
-			glAccum(GL_LOAD, 1.0 / 8);
+			glAccum(GL_LOAD, 1.0 / 9);
 		else
-			glAccum(GL_ACCUM, 1.0 / 8);
+			glAccum(GL_ACCUM, 1.0 / 9);
 	}
 	glAccum(GL_RETURN, 1);
 }
@@ -313,7 +315,6 @@ void SceneManager::drawScene(int level) {
 }
 
 void SceneManager::drawScene() {
-	lightSetup();
 	for (size_t i = 0; i < displayObjs.size(); i++) {
 		if (i != MIRROR1 && i != MIRROR2)
 			drawObject(displayObjs[i]);
