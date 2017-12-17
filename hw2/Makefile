@@ -3,7 +3,7 @@ SRCS = Camera.cpp DisplayObject.cpp FileName.cpp LightSystem.cpp main.cpp Mesh.c
 OBJDIR = ./obj
 df = $(OBJDIR)/$(*F)
 
-CPPFLAGS += -Wall -fno-pie -Os
+CPPFLAGS += -Wall -fno-pie
 LDFLAGS += -no-pie
 DEPFLAGS =  -MD -MP -MM
 LIBS = -lz -lm -lGLEW -lGL -lGLU -lglut lib/libcorona.a -lpng -ljpeg
