@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include <fstream>
 #include <cstring>
+#include <cmath>
 #include "include/glut.h"
 // without this the program cannot link
 #pragma comment (lib, "glew32.lib")
@@ -210,19 +211,22 @@ void SceneManager::display() {
 void SceneManager::drawDepthOfField() {
 	Camera a = camera;
 	Vec3 front = camera.vat - camera.eye;
-	front = front * (1 / front.magnitude());
 	Vec3 up = camera.vup;
 	Vec3 right = front.cross(up);
-	up = right.cross(front);
+	front = up.cross(right);
 	up = up * (1 / up.magnitude());
+	front = front * (1 / front.magnitude());
 	right = right * (1 / right.magnitude());
-	float jitter[9][2] = {
+	/*float jitter[9][2] = {
 		{ 0.0f, 0.0f },{ 0.0f, 0.1f },{ 0.0f, -0.1f },{ 0.1f, 0.0f },{ -0.1f, 0.0f },
 		{ 0.1f, 0.1f },{ 0.1f, -0.1f },{ -0.1f, 0.1f },{ -0.1f, -0.1f }
-	};
+	};*/
 
-	for (int i = 0; i < 9; i++) {
-		camera.eye = a.eye + up * jitter[i][0] + right * jitter[i][1];
+	for (int i = 0; i < 8; i++) {
+		const float pi = 3.14;
+		float jx = cosf(pi / 4 * i) * 0.1f;
+		float jy = sinf(pi / 4 * i) * 0.1f;
+		camera.eye = a.eye + up * jy + right * jx;
 		cameraSetup();
 		lightSetup();
 		drawMirrored();
