@@ -232,9 +232,9 @@ void SceneManager::drawDepthOfField() {
 		drawMirrored();
 		camera = a;
 		if (i == 0)
-			glAccum(GL_LOAD, 1.0 / 9);
+			glAccum(GL_LOAD, 1.0 / 8);
 		else
-			glAccum(GL_ACCUM, 1.0 / 9);
+			glAccum(GL_ACCUM, 1.0 / 8);
 	}
 	glAccum(GL_RETURN, 1);
 }
