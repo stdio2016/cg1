@@ -79,5 +79,8 @@
     <Text Include="myVertShader.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="myGeomShader.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 HW = hw2
-SRCS = Camera.cpp DisplayObject.cpp FileName.cpp LightSystem.cpp main.cpp Mesh.cpp SceneManager.cpp TextureMapping.cpp Vec3.cpp
+SRCS = Camera.cpp DisplayObject.cpp FileName.cpp LightSystem.cpp main.cpp Mesh.cpp SceneManager.cpp TextureMapping.cpp Vec3.cpp ShaderLoader.cpp
 OBJDIR = ./obj
 df = $(OBJDIR)/$(*F)
 

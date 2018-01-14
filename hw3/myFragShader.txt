@@ -1,7 +1,8 @@
 #version 150 compatibility
 
-in vec3 vertexEyeSpace;
-in vec3 normal;
+varying vec3 vertexEyeSpace;
+varying vec3 fs_normal;
+varying vec2 fs_texCoord;
 uniform sampler2D colorTexture;
 float grid(float g) {
   float f = abs(g*10.0 - round(g*10.0));
@@ -16,8 +17,8 @@ void main() {
   // out gl_FragColor : vec4   output pixel color
 
   vec4 colorSum = vec4(0.0f);
-  vec4 tex = texture(colorTexture, gl_TexCoord[0].xy);
-  vec3 N = normalize(normal);
+  vec4 tex = texture(colorTexture, fs_texCoord);
+  vec3 N = normalize(fs_normal);
   vec3 V = normalize(-vertexEyeSpace); // eye position - object position
   for (int i = 0; i < 1; i++) {
     vec3 L = normalize(gl_LightSource[i].position.xyz - vertexEyeSpace); // light vec

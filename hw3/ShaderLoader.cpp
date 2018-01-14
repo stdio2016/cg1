@@ -16,6 +16,7 @@ void showShaderError(unsigned int shader) {
 void showShaderProgError(unsigned int prog) {
 	GLint len = 0;
 	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &len);
+	if (len == 0) return;
 	GLchar *dat = new GLchar[len];
 	GLint lenall = len;
 	glGetProgramInfoLog(prog, len, &lenall, dat);

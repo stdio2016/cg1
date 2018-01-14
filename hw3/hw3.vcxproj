@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="myFragShader.txt" />
+    <Text Include="myGeomShader.txt" />
     <Text Include="myVertShader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

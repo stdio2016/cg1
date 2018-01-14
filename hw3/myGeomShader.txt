@@ -1,0 +1,30 @@
+#version 150 compatibility
+
+uniform float radius;
+uniform int level;
+uniform vec3 center;
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices=85) out;
+
+in vec4 coord[];
+in vec3 vs_normal[];
+in vec2 vs_texCoord[];
+
+out vec3 vertexEyeSpace;
+out vec3 fs_normal;
+out vec2 fs_texCoord;
+
+void main() {
+  mat4 MV = gl_ProjectionMatrix * gl_ModelViewMatrix;
+  for (int n = 0; n < 1; n++) {
+    for (int i = 0; i < 3; i++) {
+      gl_Position = MV * coord[i];
+      vertexEyeSpace = vec3(gl_ModelViewMatrix * coord[i]);
+      fs_normal = vs_normal[i];
+      fs_texCoord = vs_texCoord[i];
+      EmitVertex();
+    }
+  }
+  EndPrimitive();
+}

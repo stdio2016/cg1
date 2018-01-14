@@ -189,7 +189,11 @@ void SceneManager::LoadShaders() {
 	if (frag) {
 		glAttachShader(ShaderId, frag); glDeleteShader(frag);
 	}
-	if (!vert || !frag) {
+	GLuint geom = LoadShader("../myGeomShader.txt", GL_GEOMETRY_SHADER);
+	if (geom) {
+		glAttachShader(ShaderId, geom); glDeleteShader(geom);
+	}
+	if (!vert || !frag || !geom) {
 		puts("Unable to use shader due to shader error");
 		glDeleteProgram(ShaderId); ShaderId = 0;
 		return;
@@ -198,6 +202,7 @@ void SceneManager::LoadShaders() {
 	GLint isOK = false;
 	glGetProgramiv(ShaderId, GL_LINK_STATUS, &isOK);
 	if (!isOK) {
+		printf("shader link error\n");
 		showShaderProgError(ShaderId);
 	}
 	glUseProgram(ShaderId);

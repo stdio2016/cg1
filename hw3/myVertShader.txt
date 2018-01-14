@@ -1,7 +1,8 @@
 #version 150 compatibility
 
-out vec3 vertexEyeSpace;
-out vec3 normal;
+varying vec4 coord;
+varying vec3 vs_normal;
+varying vec2 vs_texCoord;
 
 void main(){
   // in gl_Vertex : vec4  It means input point position
@@ -14,8 +15,8 @@ void main(){
   // out gl_TexCoord[n] : vec4
 
   // what if gl_ModelViewMatrix isn't supported?
-  vertexEyeSpace = vec3(gl_ModelViewMatrix * gl_Vertex);
-  normal = normalize(gl_NormalMatrix * gl_Normal);
+  coord = gl_Vertex;
+  vs_normal = normalize(gl_NormalMatrix * gl_Normal);
   gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
-  gl_TexCoord[0] = gl_MultiTexCoord0;
+  vs_texCoord = gl_MultiTexCoord0.xy;
 }
