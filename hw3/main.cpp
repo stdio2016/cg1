@@ -94,7 +94,7 @@ void keyboardInput(unsigned char key, int x, int y) {
 	case 'u': case 'U':
 		screenSizeLocked = !screenSizeLocked; break;
 	case 'l': case 'L':
-		sc->divLevel = (sc->divLevel + 1) % 3; break;
+		sc->divLevel = (sc->divLevel + 1) % 4; break;
 	case 'f': case 'F':
 		sc->light.lights[0].position[1] -= 0.3;
 		break;

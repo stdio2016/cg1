@@ -5,7 +5,7 @@ uniform int level;
 uniform vec4 center;
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices=85) out;
+layout(triangle_strip, max_vertices=128) out;
 
 struct MyDiv {
   vec3 coord;
@@ -31,7 +31,7 @@ void draw(MyDiv p, vec3 norm) {
   mat4 MV = gl_ProjectionMatrix * gl_ModelViewMatrix;
   gl_Position = MV * cc;
   vertexEyeSpace = vec3(gl_ModelViewMatrix * cc);
-  fs_normal = norm;
+  fs_normal = gl_NormalMatrix * norm;
   fs_texCoord = p.texCoord;
   EmitVertex();
 }
@@ -69,9 +69,20 @@ void level2(MyDiv a, MyDiv b, MyDiv c) {
   level1(ab,bc,ac);
 }
 
+void level3(MyDiv a, MyDiv b, MyDiv c) {
+  MyDiv ab = makecenter(a,b);
+  MyDiv ac = makecenter(a,c);
+  MyDiv bc = makecenter(b,c);
+  level2(ab,b,bc);
+  level2(a,ab,ac);
+  level2(ac,bc,c);
+  level2(ab,bc,ac);
+}
+
 void main() {
   MyDiv a=mydiv[0], b=mydiv[1], c=mydiv[2];
-  if (level == 2) level2(a,b,c);
+  if (level == 3) level3(a,b,c);
+  else if (level == 2) level2(a,b,c);
   else if (level == 1) level1(a,b,c);
   else level0(a,b,c); 
 }
