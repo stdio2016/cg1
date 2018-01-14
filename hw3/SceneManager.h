@@ -44,7 +44,7 @@ public:
 	// destructor
 	~SceneManager();
 private:
-	GLuint programId;
+	GLuint ShaderId;
 	// load texture
 	int LoadTexture(std::string filename, GLuint texId);
 	int LoadCubemapTexture(std::string files[6], GLuint texids);

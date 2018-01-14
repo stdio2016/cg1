@@ -13,6 +13,8 @@ void mouseDrag(int x, int y);
 void display(void);
 void reshape(int width, int height);
 int screenWidth, screenHeight;
+int origScreenWidth, origScreenHeight;
+bool screenSizeLocked = true;
 
 int frameCount = 0;
 SceneManager *sc;
@@ -35,6 +37,8 @@ int main(int argc, char *argv[]) {
 	// after gl initialize
 	sc->LoadScene(SceneManager::DefaultSceneFileName);
 	sc->LoadShaders();
+	origScreenHeight = screenHeight = sc->camera.viewHeight;
+	origScreenWidth = screenWidth = sc->camera.viewWidth;
 	glutKeyboardFunc(keyboardInput);
 	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);
@@ -94,6 +98,9 @@ void keyboardInput(unsigned char key, int x, int y) {
 			selection = idx;
 		}
 	}
+	if (key == 'u') {
+		screenSizeLocked = !screenSizeLocked;
+	}
 	printf("key %d %d %d\n", key, x, y);
 	needRedraw();
 }
@@ -143,6 +150,15 @@ void slowDrawCallback(int t) {
 }
 
 void display() {
+	if (screenSizeLocked) {
+		sc->camera.viewHeight = origScreenHeight;
+		sc->camera.viewWidth = origScreenWidth;
+	}
+	else {
+		sc->camera.viewHeight = screenHeight;
+		sc->camera.viewWidth = screenWidth;
+	}
+	glViewport(sc->camera.viewX, sc->camera.viewY, sc->camera.viewWidth, sc->camera.viewHeight);
 	sc->display();
 	frameCount++;
 	if (!sc->slowDraw) {
