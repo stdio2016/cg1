@@ -4,9 +4,18 @@ out vec3 vertexEyeSpace;
 out vec3 normal;
 
 void main(){
-  // gl_Vertex is a vec4. It means input point position
-  // gl_Position is a vec4. It means output point position
+  // in gl_Vertex : vec4  It means input point position
+  // in gl_Normal : vec3
+  // in gl_MultiTexCoord0 : vec4
+  // in gl_ProjectionMatrix : mat4
+  // in gl_ModelViewMatrix : mat4
+  // in gl_NormalMatrix : mat3
+  // out gl_Position : vec4  It means output point position
+  // out gl_TexCoord[n] : vec4
 
   // what if gl_ModelViewMatrix isn't supported?
+  vertexEyeSpace = vec3(gl_ModelViewMatrix * gl_Vertex);
+  normal = normalize(gl_NormalMatrix * gl_Normal);
   gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
+  gl_TexCoord[0] = gl_MultiTexCoord0;
 }

@@ -135,6 +135,10 @@
     <ClInclude Include="TextureMapping.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="myFragShader.txt" />
+    <Text Include="myVertShader.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

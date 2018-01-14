@@ -1,3 +1,35 @@
+#version 150 compatibility
+
+in vec3 vertexEyeSpace;
+in vec3 normal;
+uniform sampler2D colorTexture;
+
 void main() {
-  gl_FragColor = vec4(1.0, .4, .3, 1.0);
+  // in gl_TextCoord[n] : vec4
+  // in gl_LightSource[n] : { ambient: vec4, diffuse: vec4, specular: vec4, position: vec4 }
+  // in gl_FrontMaterial : { ambient: vec4, diffuse: vec4, specular: vec4, shininess: float}
+  // out gl_FragColor : vec4   output pixel color
+
+  vec4 colorSum = vec4(0.0f);
+  vec4 tex = texture(colorTexture, gl_TexCoord[0].xy);
+  vec3 N = normalize(normal);
+  vec3 V = normalize(-vertexEyeSpace); // eye position - object position
+  for (int i = 0; i < 2; i++) {
+    vec3 L = normalize(gl_LightSource[i].position.xyz - vertexEyeSpace); // light vec
+    vec3 R = normalize(reflect(-L, N)); // reflect vec
+
+    // Ia = La * Ka
+    vec4 Ia = gl_LightSource[i].ambient * gl_FrontMaterial.ambient;
+
+    // Id = Ld * Kd * dot(L,N)
+    // note: cannot have negative light
+    vec4 Id = gl_LightSource[i].diffuse * gl_FrontMaterial.diffuse * max(0.0f, dot(L,N));
+
+    // Is = Ls * Ks * dot(R,V)^Ns
+    float shine = pow(max(0.0f, dot(R, V)), gl_FrontMaterial.shininess);
+    vec4 Is = gl_LightSource[i].specular * gl_FrontMaterial.specular * shine;
+
+    colorSum += Ia + Id + Is;
+  }
+  gl_FragColor = colorSum * tex;
 }
