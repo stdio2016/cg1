@@ -4,7 +4,7 @@ uniform vec4 center;
 uniform float radius;
 
 struct MyDiv {
-  vec4 coord;
+  vec3 coord;
   vec3 normal;
   vec2 texCoord;
 };
@@ -21,7 +21,7 @@ void main(){
   // out gl_TexCoord[n] : vec4
 
   // what if gl_ModelViewMatrix isn't supported?
-  mydiv.coord = gl_Vertex - center;
+  mydiv.coord = normalize((gl_Vertex - center).xyz) * radius;
   mydiv.normal = normalize(gl_NormalMatrix * gl_Normal);
   gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
   mydiv.texCoord = gl_MultiTexCoord0.xy;

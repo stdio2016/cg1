@@ -40,4 +40,5 @@ void main() {
   float gg = 1.0;
   //gg = grid(gl_TexCoord[0].x) * grid(gl_TexCoord[0].y);
   gl_FragColor = vec4(colorSum * tex) * gg;
+  gl_FragColor.a = 1.0;
 }
