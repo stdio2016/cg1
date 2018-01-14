@@ -36,6 +36,7 @@ public:
 
 	// initialize from file
 	void LoadScene(std::string filename);
+	void LoadShaders(void);
 
 	// draw scene
 	void display(void);
@@ -43,6 +44,7 @@ public:
 	// destructor
 	~SceneManager();
 private:
+	GLuint programId;
 	// load texture
 	int LoadTexture(std::string filename, GLuint texId);
 	int LoadCubemapTexture(std::string files[6], GLuint texids);

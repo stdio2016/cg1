@@ -175,6 +175,10 @@ void SceneManager::LoadScene(std::string filename) {
 	f.close();
 }
 
+void SceneManager::LoadShaders() {
+
+}
+
 SceneManager::~SceneManager()
 {
 	for (size_t i = 0; i < meshes.size(); i++) {

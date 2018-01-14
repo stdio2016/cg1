@@ -25,14 +25,16 @@ int main(int argc, char *argv[]) {
 	glutInitWindowSize(sc->camera.viewWidth, sc->camera.viewHeight);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
-	glutCreateWindow("Assignment 2");
+	glutCreateWindow("Assignment 3");
 
 	GLenum err = glewInit();
 	if (GLEW_OK != err) {
 		printf("%s\n", glewGetErrorString(err));
+		return -1;
 	}
 	// after gl initialize
 	sc->LoadScene(SceneManager::DefaultSceneFileName);
+	sc->LoadShaders();
 	glutKeyboardFunc(keyboardInput);
 	glutMouseFunc(mouseClick);
 	glutDisplayFunc(display);
@@ -72,15 +74,6 @@ void keyboardInput(unsigned char key, int x, int y) {
 		break;
 	case 'd': case 'D':
 		sc->camera.eye = right * -b + front * a + up + sc->camera.vat;
-		break;
-	case '1':
-		sc->camera.vat = Vec3(-10,15,0);
-		break;
-	case '2':
-		sc->camera.vat = Vec3(-50,15,0); // first reflecction at -70,12,0
-		break;
-	case '3':
-		sc->camera.vat = Vec3(-400,15,0); // second reflection at -170,12,0
 		break;
 	case '+':
 		selection += 10;
