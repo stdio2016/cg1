@@ -3,6 +3,11 @@
 in vec3 vertexEyeSpace;
 in vec3 normal;
 uniform sampler2D colorTexture;
+float grid(float g) {
+  float f = abs(g*10.0 - round(g*10.0));
+  if (f > 0.1) return 1.0;
+  return 0.0;
+}
 
 void main() {
   // in gl_TextCoord[n] : vec4
@@ -14,7 +19,7 @@ void main() {
   vec4 tex = texture(colorTexture, gl_TexCoord[0].xy);
   vec3 N = normalize(normal);
   vec3 V = normalize(-vertexEyeSpace); // eye position - object position
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 1; i++) {
     vec3 L = normalize(gl_LightSource[i].position.xyz - vertexEyeSpace); // light vec
     vec3 R = normalize(reflect(-L, N)); // reflect vec
 
@@ -31,5 +36,7 @@ void main() {
 
     colorSum += Ia + Id + Is;
   }
-  gl_FragColor = colorSum * tex;
+  float gg = 1.0;
+  //gg = grid(gl_TexCoord[0].x) * grid(gl_TexCoord[0].y);
+  gl_FragColor = vec4(colorSum * tex) * gg;
 }

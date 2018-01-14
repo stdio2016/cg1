@@ -222,6 +222,12 @@ void SceneManager::display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 
+	GLint location = glGetUniformLocation(ShaderId, "colorTexture");
+	if (location == -1)
+		printf("Can't find texture name: colorTexture\n");
+	else
+		glUniform1i(location, 0);
+
 	if (slowDraw) {
 		cameraSetup();
 		lightSetup();
