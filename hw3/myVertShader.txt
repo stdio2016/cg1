@@ -1,0 +1,12 @@
+#version 150 compatibility
+
+out vec3 vertexEyeSpace;
+out vec3 normal;
+
+void main(){
+  // gl_Vertex is a vec4. It means input point position
+  // gl_Position is a vec4. It means output point position
+
+  // what if gl_ModelViewMatrix isn't supported?
+  gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
+}

@@ -4,5 +4,8 @@
 // I think most shaders are small
 #define MAX_SHADER_CODE_SIZE 65536
 
-bool LoadShader(const char *filename, unsigned int shaderType);
+
+void showShaderProgError(unsigned int prog);
+// return 0 = error
+unsigned int LoadShader(const char *filename, unsigned int shaderType);
 #endif

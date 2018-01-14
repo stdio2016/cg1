@@ -1,5 +1,6 @@
 #include "include/GL/glew.h"
 #include "SceneManager.h"
+#include "ShaderLoader.h"
 #include <fstream>
 #include <cstring>
 #include <cmath>
@@ -176,7 +177,30 @@ void SceneManager::LoadScene(std::string filename) {
 }
 
 void SceneManager::LoadShaders() {
-
+	ShaderId = glCreateProgram();
+	if (ShaderId == 0) {
+		puts("error creating program"); return;
+	}
+	GLuint vert = LoadShader("../myVertShader.txt", GL_VERTEX_SHADER);
+	if (vert) {
+		glAttachShader(ShaderId, vert); glDeleteShader(vert);
+	}
+	GLuint frag = LoadShader("../myFragShader.txt", GL_FRAGMENT_SHADER);
+	if (frag) {
+		glAttachShader(ShaderId, frag); glDeleteShader(frag);
+	}
+	if (!vert || !frag) {
+		puts("Unable to use shader due to shader error");
+		glDeleteProgram(ShaderId); ShaderId = 0;
+		return;
+	}
+	glLinkProgram(ShaderId);
+	GLint isOK = false;
+	glGetProgramiv(ShaderId, GL_LINK_STATUS, &isOK);
+	if (!isOK) {
+		showShaderProgError(ShaderId);
+	}
+	glUseProgram(ShaderId);
 }
 
 SceneManager::~SceneManager()
