@@ -19,6 +19,7 @@ void SceneManager::Init() {
 	camera = Camera();
 	light = LightSystem();
 	slowDraw = true;
+	divLevel = 0;
 }
 
 struct MyImg {
@@ -228,10 +229,16 @@ void SceneManager::display() {
 	glEnable(GL_CULL_FACE);
 
 	GLint location = glGetUniformLocation(ShaderId, "colorTexture");
-	if (location == -1)
-		printf("Can't find texture name: colorTexture\n");
-	else
-		glUniform1i(location, 0);
+	if (location != -1) glUniform1i(location, 0);
+
+	GLint d1 = glGetUniformLocation(ShaderId, "radius");
+	if (d1 != -1) glUniform1f(d1, 1.0f);
+
+	GLint d2 = glGetUniformLocation(ShaderId, "center");
+	if (d2 != -1) glUniform4f(d2, 0.0f, 1.0f, 0.0f, 0.0f);
+
+	GLint d3 = glGetUniformLocation(ShaderId, "level");
+	if (d3 != -1) glUniform1i(d3, divLevel);
 
 	if (slowDraw) {
 		cameraSetup();

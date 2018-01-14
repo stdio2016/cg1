@@ -91,15 +91,22 @@ void keyboardInput(unsigned char key, int x, int y) {
 			selection = 0;
 		}
 		break;
+	case 'u': case 'U':
+		screenSizeLocked = !screenSizeLocked; break;
+	case 'l': case 'L':
+		sc->divLevel = (sc->divLevel + 1) % 3; break;
+	case 'f': case 'F':
+		sc->light.lights[0].position[1] -= 0.3;
+		break;
+	case 'r': case 'R':
+		sc->light.lights[0].position[1] += 0.3;
+		break;
 	}
 	if (key >= '0' && key <= '9') {
 		size_t idx = key == '0' ? 9 : key - '1';
 		if (idx < sc->displayObjs.size()) {
 			selection = idx;
 		}
-	}
-	if (key == 'u') {
-		screenSizeLocked = !screenSizeLocked;
 	}
 	printf("key %d %d %d\n", key, x, y);
 	needRedraw();

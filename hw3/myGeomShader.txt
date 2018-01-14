@@ -2,29 +2,75 @@
 
 uniform float radius;
 uniform int level;
-uniform vec3 center;
+uniform vec4 center;
 
 layout(triangles) in;
 layout(triangle_strip, max_vertices=85) out;
 
-in vec4 coord[];
-in vec3 vs_normal[];
-in vec2 vs_texCoord[];
+struct MyDiv {
+  vec4 coord;
+  vec3 normal;
+  vec2 texCoord;
+};
+varying MyDiv mydiv[];
 
 out vec3 vertexEyeSpace;
 out vec3 fs_normal;
 out vec2 fs_texCoord;
 
-void main() {
+MyDiv makecenter(MyDiv a, MyDiv b) {
+  MyDiv c;
+  c.coord = normalize(a.coord + b.coord) * radius;
+  c.normal = (a.normal + b.normal)*0.5;
+  c.texCoord = (a.texCoord + b.texCoord)*0.5;
+  return c;
+}
+
+void draw(MyDiv p) {
   mat4 MV = gl_ProjectionMatrix * gl_ModelViewMatrix;
-  for (int n = 0; n < 1; n++) {
-    for (int i = 0; i < 3; i++) {
-      gl_Position = MV * coord[i];
-      vertexEyeSpace = vec3(gl_ModelViewMatrix * coord[i]);
-      fs_normal = vs_normal[i];
-      fs_texCoord = vs_texCoord[i];
-      EmitVertex();
-    }
-  }
+  gl_Position = MV * (p.coord + center);
+  vertexEyeSpace = vec3(gl_ModelViewMatrix * p.coord);
+  fs_normal = p.normal;
+  fs_texCoord = p.texCoord;
+  EmitVertex();
+}
+
+void level0(MyDiv a, MyDiv b, MyDiv c) {
+  draw(a);
+  draw(b);
+  draw(c);
   EndPrimitive();
+}
+
+void level1(MyDiv a, MyDiv b, MyDiv c) {
+  MyDiv ab = makecenter(a,b);
+  MyDiv ac = makecenter(a,c);
+  MyDiv bc = makecenter(b,c);
+  draw(ab);
+  draw(b);
+  draw(bc);
+  EndPrimitive();
+  draw(a);
+  draw(ab);
+  draw(ac);
+  draw(bc);
+  draw(c);
+  EndPrimitive();
+}
+
+void level2(MyDiv a, MyDiv b, MyDiv c) {
+  MyDiv ab = makecenter(a,b);
+  MyDiv ac = makecenter(a,c);
+  MyDiv bc = makecenter(b,c);
+  level1(ab,b,bc);
+  level1(a,ab,ac);
+  level1(ac,bc,c);
+  level1(ab,bc,ac);
+}
+
+void main() {
+  MyDiv a=mydiv[0], b=mydiv[1], c=mydiv[2];
+  if (level == 2) level2(a,b,c);
+  else if (level == 1) level1(a,b,c);
+  else level0(a,b,c); 
 }

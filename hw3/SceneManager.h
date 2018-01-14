@@ -29,6 +29,7 @@ public:
 	std::vector<TextureMapping *> textureMappings;
 
 	bool slowDraw;
+	int divLevel;
 
 	// initializer
 	SceneManager(void);

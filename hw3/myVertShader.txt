@@ -1,8 +1,14 @@
 #version 150 compatibility
 
-varying vec4 coord;
-varying vec3 vs_normal;
-varying vec2 vs_texCoord;
+uniform vec4 center;
+uniform float radius;
+
+struct MyDiv {
+  vec4 coord;
+  vec3 normal;
+  vec2 texCoord;
+};
+varying MyDiv mydiv;
 
 void main(){
   // in gl_Vertex : vec4  It means input point position
@@ -15,8 +21,8 @@ void main(){
   // out gl_TexCoord[n] : vec4
 
   // what if gl_ModelViewMatrix isn't supported?
-  coord = gl_Vertex;
-  vs_normal = normalize(gl_NormalMatrix * gl_Normal);
+  mydiv.coord = gl_Vertex - center;
+  mydiv.normal = normalize(gl_NormalMatrix * gl_Normal);
   gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
-  vs_texCoord = gl_MultiTexCoord0.xy;
+  mydiv.texCoord = gl_MultiTexCoord0.xy;
 }
